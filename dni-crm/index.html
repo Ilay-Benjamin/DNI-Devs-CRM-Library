@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script type="module">
+        import 'https://code.jquery.com/jquery-3.6.0.min.js';
+        export default window.jQuery.noConflict(true)
+        import { Dni } from './dni.js';
+        
+        $(document).ready(function() {
+            getActionResults();
+        });
+    
+        async function getActionResults()  {
+            var dni = new Dni();
+           // var results = await dni.getAllUsersList();
+            var results = await dni.addUser( "אורי כהן", "0541234567",  "oriC5ohen@gmail.com");
+            $("#demo").html(JSON.stringify(results));
+        }
+
+    </script>
+   
+
+</head>
+
+
+<body>
+    
+    <h1>hello world</h1>
+    <p id="demo"></p>
+
+</body>
+
+
+</html>
