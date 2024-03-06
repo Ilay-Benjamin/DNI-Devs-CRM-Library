@@ -14,8 +14,7 @@ export class Test {
     run(data) {
         var response = new Output();
         var testResults = this.method(...data);
-        response.mergeStatus(testResults);
-        response.mergeMessages(testResults);
+        merge(testResults);
         response.data = [];
         return response;
     }
@@ -31,8 +30,7 @@ class SubTest {
     run(data) {
         var response = new Output();
         var testResults = this.method(...data);
-        response.mergeStatus(testResults);
-        response.mergeMessages(testResults);
+        response.merge(testResults);
         response.data = [];
         return response;
     }
@@ -115,25 +113,20 @@ class LimitDataFieldTest extends SubTest {
         var output = new Output();
         if (limit == null || limit.toString().length == 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר מקסימלי של משתמשים", ErrorTypes.EMPTY_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (isNaN(limit)) {
             var newOutput =  OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר מקסימלי של משתמשים", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (limit < 0) {
             var newOutput =  OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר מקסימלי של משתמשים", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (limit > 9999) {
             var newOutput =  OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר מקסימלי של משתמשים", ErrorTypes.LONG_INPUT_LENGTH);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         if (!output.isError()) {
             var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         return output;
     }
@@ -153,25 +146,20 @@ class IdDataFieldTest extends SubTest {
         var output = new Output();
         if (id == null || id.toString().length == 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מס' מזהה", ErrorTypes.EMPTY_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (isNaN(id)) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מס' מזהה", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (id < 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מס' מזהה", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (id > 9999) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מס' מזהה", ErrorTypes.LONG_INPUT_LENGTH);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         if (!output.isError()) {
             var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         return output;
     }
@@ -191,17 +179,15 @@ class FullnameDataFieldTest extends SubTest {
         var output = new Output();
         if (fullname == null || fullname.toString().length == 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT('שם מלא', ErrorTypes.EMPTY_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (/[^\u0590-\u05FFa-zA-Z\s]/.test(fullname)) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT('שם מלא', ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
+
         if (!output.isError()) {
             var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         return output;
     }
@@ -222,21 +208,17 @@ class EmailDataFieldTest extends SubTest {
         var output = new Output();
         if (email == null || email.toString().length == 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("כתובת אימייל", ErrorTypes.EMPTY_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (!/^[a-zA-Z]+[a-zA-Z0-9]*@[a-zA-Z0-9]+\.[a-zA-Z]+(?:\.[a-zA-Z]+)*$/.test(email) || !(email.match(/@/g) || []).length === 1) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("כתובת אימייל", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (email.length > 255) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("כתובת אימייל", ErrorTypes.LONG_INPUT_LENGTH);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         if (!output.isError()) {
             var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         return output;
     }
@@ -257,12 +239,10 @@ class PhoneNumberDataFieldTest extends SubTest {
         var output = new Output();
         if (phoneNumber == null || phoneNumber.toString().length == 0) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר טלפון", ErrorTypes.EMPTY_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (!/^[0-9-]+$/.test(phoneNumber)) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר טלפון", ErrorTypes.INVALID_INPUT);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if ((phoneNumber.match(/-/g) || []).length) {
             var dashCount = (phoneNumber.match(/-/g) || []).length;
             if (dashCount > 1) {
@@ -278,17 +258,14 @@ class PhoneNumberDataFieldTest extends SubTest {
             phoneNumber = phoneNumber.replace(/-/g, '');
         } else if (phoneNumber.toString().length < 10) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר טלפון", ErrorTypes.SHORT_INPUT_LENGTH);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         } else if (phoneNumber.toString().length > 10) {
             var newOutput = OutputFactory.GET_INVALID_INPUT_OUTPUT("מספר טלפון", ErrorTypes.LONG_INPUT_LENGTH);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         if (!output.isError()) {
             var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.mergeStatus(newOutput);
-            output.mergeMessages(newOutput);
+            output.merge(newOutput);
         }
         return output;
     }
@@ -309,8 +286,7 @@ class ListUsersActionTest extends Test {
     static method({limit}) {
         var output = new Output();
         var dataFieldsTestResults = SubTestFactory.GET(SubTests.LIMIT_DATA_FIELD_SUB_TEST).run([limit]);
-        output.mergeStatus(dataFieldsTestResults);
-        output.mergeMessages(dataFieldsTestResults);
+        output.merge(dataFieldsTestResults);
         return output;
     }
 
@@ -335,10 +311,7 @@ class AddUserActionTest extends Test {
             phoneNumber: SubTestFactory.GET(SubTests.PHONE_NUMBER_DATA_FIELD_SUB_TEST).run([phoneNumber])
         }
         dataFieldsTestResults.array.forEach(testResults => {
-            if (testResults.isError()) {
-                output.mergeMessages(testResults);
-            }
-            output.mergeStatus(testResults);
+            output.merge(testResults);
         });
         return output;
     }
@@ -359,8 +332,7 @@ class DeleteUserActionTest extends Test {
     static method({id}) {
         var output = new Output();
         var dataFieldsTestResults = SubTestFactory.GET(SubTests.ID_DATA_FIELD_SUB_TEST).run([id]);
-        output.mergeStatus(dataFieldsTestResults);
-        output.mergeMessages(dataFieldsTestResults);
+        output.merge(dataFieldsTestResults);
         return output;
     }
 
@@ -388,26 +360,15 @@ class UpdateUserActionTest extends Test {
         }
         if (dataFieldsTestResults.id.isError()) {
             dataFieldsTestResults.array.forEach(testResults => {
-                if (testResults.isError()) {
-                    output.mergeMessages(testResults);
-                    output.mergeStatus(testResults);
-                }
+                    output.merge(testResults);
             });
         } else {
             dataFieldsTestResults.array.forEach(testResults => {
-                if (testResults.isError()) {
-                    if (testResults.messages[0] != emptyInputErrorMessage) {
-                        output.mergeMessages(testResults);
-                        output.mergeStatus(testResults);
-                    }
-                } else {
-                    output.mergeStatus(testResults);
-                }
+                output.merge(testResults);
             });
             if (!output.isError()) {
                 var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-                output.mergeStatus(newOutput);
-                output.mergeMessages(newOutput);
+                output.merge(newOutput);
             }
         }
         return output;
@@ -432,8 +393,7 @@ class FindUserActionTest extends Test {
             field == id ? 
             SubTestFactory.GET(SubTests.ID_DATA_FIELD_SUB_TEST).run([data]) : 
             SubTestFactory.GET(SubTests.EMAIL_DATA_FIELD_SUB_TEST).run([data]);
-        output.mergeStatus(dataFieldsTestResults);
-        output.mergeMessages(dataFieldsTestResults);
+        output.merge(dataFieldsTestResults);
         return output;
     }
 

@@ -35,6 +35,7 @@ export class Dni {
 
     async getAllUsersList() {
         const action = ActionFactory.GET(Actions.ALL_USERS_ACTION);
+        console.log('dni -> getAllUsersList: ' + JSON.stringify(action));
         const callback = () => {};
         const response =  await action.call();
         console.log('dni -> response: ' + JSON.stringify(response));
@@ -85,4 +86,3 @@ export class Dni {
     }
 
 }
-

@@ -14,13 +14,15 @@
         import { Dni } from './dni.js';
         
         $(document).ready(function() {
-            getActionResults();
+            $("#AddUser").click(function() {
+                getActionResults();
+            });
         });
     
-        async function getActionResults()  {
+         async function getActionResults()  {
             var dni = new Dni();
-           // var results = await dni.getAllUsersList();
-            var results = await dni.addUser( "אורי כהן", "0541234567",  "oriC5ohen@gmail.com");
+            //var results = await dni.getAllUsersList();
+            var results = await dni.addUser( "אורי חיים כהן", "0541234567",  "gfhfen@gmail.com" );
             $("#demo").html(JSON.stringify(results));
         }
 
@@ -34,6 +36,8 @@
     
     <h1>hello world</h1>
     <p id="demo"></p>
+
+    <button id="AddUser">click me</button>
 
 </body>
 

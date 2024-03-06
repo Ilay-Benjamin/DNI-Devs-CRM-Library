@@ -3,7 +3,7 @@ window.jQuery = jQuery
 window.$ = jQuery
 
 class Output {
-    constructor (status = true, data = [], ...messages) {
+    constructor (status = false, data = [], ...messages) {
         if (data == null) {
             this.data = [];
         }
@@ -22,6 +22,16 @@ class Output {
         return !this.status;
     }
 
+    hasErrorMessages() {
+        if (this.status) {
+            return false;
+        }
+        if (this.messages.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
     addMessage(...messages) {
         this.messages.push(messages);
     }
@@ -30,13 +40,40 @@ class Output {
         this.data.push(...otherData);
     }
 
-    mergeMessages(otherOutput = []) {
-        this.messages.push(...otherOutput.messages);        
+    merge(otherOutput) {
+        if (this.status && !otherOutput.status) {
+            this.status = false;
+            this.messages.splice(0, this.messages.length);
+            this.messages.push(...otherOutput.messages);
+        } else if (!this.status && otherOutput.status) {
+            if (this.messages.length == 0) {
+                this.status = true;
+                this.messages.push(...otherOutput.messages);
+            } else {
+                //Nothing...
+            }
+        } else if (this.status && otherOutput.status) {
+            if (this.messages.length == 0) {
+                this.messages.push(...otherOutput.messages);
+            } else {
+                //Nothing...
+            }
+        } else {
+            this.messages.push(...otherOutput.messages);
+        }
     }
 
-    mergeStatus(otherOutput) {
-        this.status = this.status && otherOutput.status;
+    mergeMessages(otherOutput) {
+        if (this.status && !otherOutput.status) {
+            //Nothing...
+        } else if (!this.status && otherOutput.status) {
+            this.messages.splice(0, this.messages.length);
+            this.messages.push(...otherOutput.messages);
+        } else {
+            this.messages.push(...otherOutput.messages);
+        }
     }
+
 }
 
 

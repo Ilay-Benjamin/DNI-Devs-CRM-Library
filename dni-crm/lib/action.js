@@ -20,8 +20,7 @@ class Action {
         var testResults = this.#getActionTestResults(data);
         console.log('testResults: ' + JSON.stringify(testResults));
 
-        response.mergeStatus(testResults);
-        response.mergeMessages(testResults);
+        response.merge(testResults);
         response.data = [];
         console.log('new response: ' + JSON.stringify(response));
 
@@ -38,16 +37,12 @@ class Action {
     async call() {
         var inputs = this.#requireInput();
         console.log('inputs: ' + JSON.stringify(inputs));
-
         var response = new Output();
         var testResults = this.#getActionTestResults(inputs);
         console.log('testResults: ' + JSON.stringify(testResults));
-
-        response.mergeStatus(testResults);
-        response.mergeMessages(testResults);
+        response.merge(testResults);
         response.data = [];
         console.log('new response: ' + JSON.stringify(response));
-
         if (response.status) { 
             inputs.callback = () => {};
             inputs.output = response;
@@ -63,32 +58,36 @@ class Action {
         switch (this.name) {
             case Actions.USERS_LIST_ACTION:
                 var test = TestFactory.GET(Tests.LIST_USERS_ACTION_TEST);
-                testResults.mergeStatus(test.run(data.limit));
+                testResults.merge(test.run(data.limit));
                 break;
             case Actions.ALL_USERS_ACTION:
                 var test = TestFactory.GET(Tests.ALL_USERS_ACTION_TEST);
-                testResults.mergeStatus(test.run());
+                testResults.merge(test.run());
                 break;
             case Actions.FIND_USER_ACTION:
                 var test = TestFactory.GET(Tests.FIND_USER_ACTION_TEST);
                 if (data.id == null && data.email != null) {
-                    testResults.mergeStatus(TestFactory.GET(Tests.EMAIL_DATA_FIELD_SUB_TEST).run(data.email));
+                    testResults.merge(TestFactory.GET(Tests.EMAIL_DATA_FIELD_SUB_TEST).run(data.email));
                 } else if (data.id != null && data.email == null) {
-                    testResults.mergeStatus(TestFactory.GET(Tests.ID_DATA_FIELD_SUB_TEST).run(data.id));
+                    testResults.merge(TestFactory.GET(Tests.ID_DATA_FIELD_SUB_TEST).run(data.id));
                 }
                 break;
             case Actions.ADD_USER_ACTION:
                 var test = TestFactory.GET(Tests.ADD_USER_ACTION_TEST);
-                testResults.mergeStatus(test.run(data.fullname, data.phoneNumber, data.email));
+                testResults.merge(test.run(data.fullname, data.phoneNumber, data.email));
                 break;
             case Actions.DELETE_USER_ACTION:
                 var test = TestFactory.GET(Tests.DELETE_USER_ACTION_TEST);
-                testResults.mergeStatus(test.run(data.id));
+                testResults.merge(test.run(data.id));
                 break;
             case Actions.UPDATE_USER_ACTION:
                 var test = TestFactory.GET(Tests.UPDATE_USER_ACTION_TEST);
-                testResults.mergeStatus(test.run(data.id, data.fullname, data.phoneNumber, data.email));
+                testResults.merge(test.run(data.id, data.fullname, data.phoneNumber, data.email));
                 break;
+        }
+
+        if (!testResults.hasErrorMessages()) {
+            testResults.merge(OutputFactory.GET_SUCCESS_OUTPUT([]));
         }
         return testResults;
     }
@@ -165,7 +164,7 @@ class UsersListAction extends Action {
                     console.log('data: ' + JSON.stringify(data));
                     console.log('output before addData(): ' + JSON.stringify(output));
                     output.addData(data);
-                    results = data;
+                    results = output;
                 }
             }
         });
@@ -199,7 +198,7 @@ class AllUsersAction extends Action {
                 } else {
                     console.log('data: ' + JSON.stringify(data));
                     output.addData(data);
-                    results = data;
+                    results = output;
                 }
             },
             error: function (data) {
@@ -227,7 +226,7 @@ class FindUserAction extends Action {
             success: function (data) {
                 console.log('data: ' + JSON.stringify(data));
                 output.addData([data]);
-                results = data;
+                results = output;
             },
             error: function (data) {
                 //Nothing...
@@ -255,7 +254,7 @@ class AddUserAction extends Action {
             type: 'GET',
             success: function (data) {
                 output.addData(data);
-                results = data;
+                results = output;
             },
             error: function (data) {
                 //Nothing...
@@ -285,7 +284,7 @@ class DeleteUserAction extends Action {
             type: 'GET',
             success: function (data) {
                 output.addData(data);
-                results = data;
+                results = output;
             }, 
             error: function (data) {
                 //Nothing...
@@ -338,7 +337,7 @@ class UpdateUserAction extends Action {
                     type: 'GET',
                     success: function (data) {
                         output.addData(data);
-                        results = data;
+                        results = output;
                     }
                 });
             }, error: function (data) {
