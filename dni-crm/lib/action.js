@@ -119,7 +119,8 @@ class Action {
 class Actions {
     static USERS_LIST_ACTION = 'usersList';
     static ALL_USERS_ACTION = 'allUsers';
-    static FIND_USER_ACTION = 'findUser';
+    static FIND_USER_BY_ID_ACTION = 'findByIdUser';
+    static FIND_USER_BY_EMAIL_ACTION = 'findByEmailUser';
     static ADD_USER_ACTION = 'addUser';
     static DELETE_USER_ACTION = "deleteUser";
     static UPDATE_USER_ACTION = "updateUser";
@@ -134,8 +135,10 @@ class ActionFactory {
                 return new UsersListAction();
             case Actions.ALL_USERS_ACTION:
                 return new AllUsersAction();
-            case Actions.FIND_USER_ACTION:
-                return new FindUserAction();
+            case Actions.FIND_USER_BY_ID_ACTION:
+                return new FindUserByIdAction();
+            case Actions.FIND_USER_BY_EMAIL_ACTION:
+                return new FindUserByEmailAction();
             case Actions.ADD_USER_ACTION:
                 return new AddUserAction();
             case Actions.DELETE_USER_ACTION:
@@ -216,12 +219,38 @@ class AllUsersAction extends Action {
 }
 
 
-class FindUserAction extends Action {
+class FindUserByIdAction extends Action {
     static name() { return "findUser"; }
 
     static async method({id, callback, output}) {
         var results = [];
-        await $.ajax({url: 'https://ilay-apis.online/APIs/API-7/index.php/user/find?id=' + id,
+        await $.ajax({url: 'https://ilay-apis.online/APIs/API-7/index.php/user/findById?id=' + id,
+            type: 'GET', 
+            success: function (data) {
+                console.log('data: ' + JSON.stringify(data));
+                output.addData([data]);
+                results = output;
+            },
+            error: function (data) {
+                //Nothing...
+            }
+        });
+        return results;
+    }
+
+    constructor() {
+        super('', () => {}); // Dummy values for initialization
+        this.name = this.constructor.name;
+        this.method = this.constructor.method;
+    }
+}
+
+class FindUserByEmailAction extends Action {
+    static name() { return "findUser"; }
+
+    static async method({email, callback, output}) {
+        var results = [];
+        await $.ajax({url: 'https://ilay-apis.online/APIs/API-7/index.php/user/findByEmail?email=' + email,
             type: 'GET', 
             success: function (data) {
                 console.log('data: ' + JSON.stringify(data));

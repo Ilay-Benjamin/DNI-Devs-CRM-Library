@@ -5,6 +5,12 @@ import { Output, ErrorTypes, OutputFactory } from './lib/output.js';
 import { Action, Actions, ActionFactory } from './lib/action.js';
 import { Test, Tests, TestFactory } from './lib/test.js';
 
+const myHeaders = new Headers();
+myHeaders.append("Access-Control-Allow-Origin", "*");
+myHeaders.append('Access-Control-Allow-Credentials', 'true');
+myHeaders.append("Access-Control-Allow-Headers", "X-Requested-With");
+myHeaders.append("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000');
 
 
 export class Dni {
@@ -43,7 +49,7 @@ export class Dni {
     }
 
     async findUserById(id) {
-        const action = ActionFactory.GET(Actions.FIND_USER_ACTION);
+        const action = ActionFactory.GET(Actions.FIND_USER_BY_ID_ACTION);
         const callback = () => {};
         const data = {
             id: id
@@ -53,7 +59,7 @@ export class Dni {
     }
 
     async findUserByEmail(email) {
-        const action = ActionFactory.GET(Actions.FIND_USER_ACTION);
+        const action = ActionFactory.GET(Actions.FIND_USER_BY_EMAIL_ACTION);
         const callback = () => {};
         const data = {
             email: email
