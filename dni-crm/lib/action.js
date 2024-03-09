@@ -2,96 +2,162 @@ import $ from "../include/jquery.js";
 window.jQuery = jQuery
 window.$ = jQuery
 import { Output, ErrorTypes, OutputFactory } from './output.js';
-import { Test, Tests, TestFactory } from './test.js';
+import { Tests, TesterFactory, TestTypes, Tester } from './test1.js';
 
 
 
 class Action {
-
     constructor(name, method) {
         this.name = name;
         this.method = method;
     }
-
     async callWithData(data) {
+        console.log('action -> callWithData() -> name : ' + JSON.stringify(this.name));
         console.log('data: ' + JSON.stringify(data));
-
         var response = new Output();
         var testResults = this.#getActionTestResults(data);
-        console.log('testResults: ' + JSON.stringify(testResults));
-
+        console.log('action -> callWithData() -> testResults: ' + JSON.stringify(testResults));
         response.merge(testResults);
         response.data = [];
-        console.log('new response: ' + JSON.stringify(response));
-
-        if (response.status) { 
+        console.log('action -> callWithData() -> new response: ' + JSON.stringify(response));
+        if (!response.hasErrorMessages()) { 
             data.callback = () => {};
             data.output = response;
             var results = await this.method({ ...data});
             return results;
         } else {
-            //callback.error(response);
+            throw response;
         }
     }
-
     async call() {
+        console.log('action -> callWithData() -> name : ' + JSON.stringify(this.name));
         var inputs = this.#requireInput();
-        console.log('inputs: ' + JSON.stringify(inputs));
+        console.log('action -> call() -> inputs : ' + JSON.stringify(inputs));
         var response = new Output();
         var testResults = this.#getActionTestResults(inputs);
-        console.log('testResults: ' + JSON.stringify(testResults));
+        console.log('action -> call() -> testResults : ' + JSON.stringify(testResults));
         response.merge(testResults);
         response.data = [];
+        console.log('action -> call() -> response : ' + JSON.stringify(response));
         console.log('new response: ' + JSON.stringify(response));
-        if (response.status) { 
+        if (!response.hasErrorMessages()) { 
             inputs.callback = () => {};
             inputs.output = response;
             var results = await this.method({ ...inputs});
+            console.log('action -> call() -> results : ' + JSON.stringify(results));
             return results;
         } else {
-            //callback.error(response);
+            return response;
         }
     }
-
     #getActionTestResults(data) {
-        var testResults = new Output();
-        switch (this.name) {
-            case Actions.USERS_LIST_ACTION:
-                var test = TestFactory.GET(Tests.LIST_USERS_ACTION_TEST);
-                testResults.merge(test.run(data.limit));
-                break;
-            case Actions.ALL_USERS_ACTION:
-                var test = TestFactory.GET(Tests.ALL_USERS_ACTION_TEST);
-                testResults.merge(test.run());
-                break;
-            case Actions.FIND_USER_ACTION:
-                var test = TestFactory.GET(Tests.FIND_USER_ACTION_TEST);
-                if (data.id == null && data.email != null) {
-                    testResults.merge(TestFactory.GET(Tests.EMAIL_DATA_FIELD_SUB_TEST).run(data.email));
-                } else if (data.id != null && data.email == null) {
-                    testResults.merge(TestFactory.GET(Tests.ID_DATA_FIELD_SUB_TEST).run(data.id));
-                }
-                break;
-            case Actions.ADD_USER_ACTION:
-                var test = TestFactory.GET(Tests.ADD_USER_ACTION_TEST);
-                testResults.merge(test.run(data.fullname, data.phoneNumber, data.email));
-                break;
-            case Actions.DELETE_USER_ACTION:
-                var test = TestFactory.GET(Tests.DELETE_USER_ACTION_TEST);
-                testResults.merge(test.run(data.id));
-                break;
-            case Actions.UPDATE_USER_ACTION:
-                var test = TestFactory.GET(Tests.UPDATE_USER_ACTION_TEST);
-                testResults.merge(test.run(data.id, data.fullname, data.phoneNumber, data.email));
-                break;
+        console.log('action -> #getActionTestResults() -> this.name : ' + JSON.stringify(this.name));
+        console.log('action -> #getActionTestResults() -> data : ' + JSON.stringify(data));
+        var actionTestOutput = this.#getActionTesterHanlers()[this.name](data);
+        console.log('action -> #getActionTestResults() -> actionTestOutput : ' + JSON.stringify(actionTestOutput));
+        if (!actionTestOutput.hasErrorMessages()) {
+            actionTestOutput.merge(OutputFactory.GET_SUCCESS_OUTPUT([]));
         }
-
-        if (!testResults.hasErrorMessages()) {
-            testResults.merge(OutputFactory.GET_SUCCESS_OUTPUT([]));
-        }
-        return testResults;
+        console.log('action -> #getActionTestResults() -> return ( actionTestOutput ) : ' + JSON.stringify(actionTestOutput));
+        return actionTestOutput;
     }
-
+    #getActionTesterHanlers() {
+        return {
+            [Actions.USERS_LIST_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.USERS_LIST_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            },
+            [Actions.ALL_USERS_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));  
+                var test = tester.build(Tests.ALL_USERS_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run({});
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            },
+            [Actions.FIND_USER_BY_ID_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.FIND_USER_BY_ID_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            },
+            [Actions.FIND_USER_BY_EMAIL_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.FIND_USER_BY_EMAIL_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            },
+            [Actions.ADD_USER_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.ADD_USER_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            },
+            [Actions.DELETE_USER_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.DELETE_USER_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+                return actionTestOutput;
+            },
+            [Actions.UPDATE_USER_ACTION]: function(data) {
+                var testerType = TestTypes.ACTION_TYPE;
+                var actionTestOutput = new Output();
+                var tester = TesterFactory.GET(testerType);
+                console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
+                console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
+                var test = tester.build(Tests.UPDATE_USER_ACTION);
+                console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
+                var testResults = test.run(data, data, data, data);
+                console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
+                actionTestOutput.merge(testResults);
+                return actionTestOutput;
+            }
+        }
+    }
     #requireInput() {
         var inputsNames = this.method.toString()
         .match(/\(([^)]+)\)/)[1]  // Extract the parameters string inside the parentheses
@@ -99,6 +165,9 @@ class Action {
         .split(',')               // Split the string into an array by commas
         .map(name => name.trim()) // Trim whitespace from each parameter name
         .filter(name => name !== 'callback' && name !== '' && name !== 'output'); // Remove 'callback' and empty strings    
+        console.log('inputsNames: ' + JSON.stringify(inputsNames));
+        console.log('action -> #requireInput() -> typeof ( inputsNames ) : ' + typeof(inputsNames));
+        console.log('action -> #requireInput() -> inputsNames : ' + JSON.stringify(inputsNames));
         var translatedInputsNames = {
             id: "מס' מזהה",
             fullname: "שם מלא",
@@ -106,13 +175,11 @@ class Action {
             email: "כתובת אימייל",
             limit: "מספר מקסימלי של משתמשים",
         };
-        console.log('inputsNames: ' + inputsNames);
-        console.log('translatedInputsNames: ' + JSON.stringify(translatedInputsNames));
+        console.log('action -> #requireInputs() -> translatedInputsNames : ' + JSON.stringify(translatedInputsNames));
         var inputs = {};
         inputsNames.forEach(name => inputs[name] = prompt("אנא הכנס " + translatedInputsNames[name] + ": "));
         return inputs;
     }
-    
 }
 
 
@@ -153,10 +220,11 @@ class ActionFactory {
 
 
 class UsersListAction extends Action {
-    static name() { return "usersList"; }
+    static name() { return Actions.USERS_LIST_ACTION; }
 
     static async method({limit, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         await $.ajax({
             url: 'https://ilay-apis.online/APIs/API-7/index.php/user/list?limit=' + limit,
             type: 'GET',
@@ -164,9 +232,8 @@ class UsersListAction extends Action {
                 if (data.length == 0) {
                     //callback.error(OutputFactory.GET_SYSTEM_ERROR_OUTPUT(ErrorTypes.USER_NOT_FOUND));
                 } else {
-                    console.log('data: ' + JSON.stringify(data));
-                    console.log('output before addData(): ' + JSON.stringify(output));
-                    output.addData(data);
+                    console.log('action -> UsersListAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
+                    output.addData(data)
                     results = output;
                 }
             }
@@ -176,21 +243,22 @@ class UsersListAction extends Action {
 
     constructor() {
         super('', () => {});
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
 
 
 class AllUsersAction extends Action {
-    static name() { return "usersList"; }
+    static name() { return Actions.ALL_USERS_ACTION; }
 
     static test({}) {
         return OutputFactory.GET_SUCCESS_OUTPUT([]);
     }
 
     static async method({callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         var limit = 9999;
         await $.ajax({
             url: 'https://ilay-apis.online/APIs/API-7/index.php/user/list?limit=' + limit,
@@ -199,7 +267,7 @@ class AllUsersAction extends Action {
                 if (data.length == 0) {
                     //Nothing...
                 } else {
-                    console.log('data: ' + JSON.stringify(data));
+                    console.log('action -> AllUsersAction -> method() -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                     output.addData(data);
                     results = output;
                 }
@@ -213,21 +281,22 @@ class AllUsersAction extends Action {
 
     constructor() {
         super('', () => {});
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
 
 
 class FindUserByIdAction extends Action {
-    static name() { return "findUser"; }
+    static name() { return Actions.FIND_USER_BY_ID_ACTION; }
 
     static async method({id, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         await $.ajax({url: 'https://ilay-apis.online/APIs/API-7/index.php/user/findById?id=' + id,
             type: 'GET', 
             success: function (data) {
-                console.log('data: ' + JSON.stringify(data));
+                console.log('action -> FindUserByIdAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                 output.addData([data]);
                 results = output;
             },
@@ -240,20 +309,21 @@ class FindUserByIdAction extends Action {
 
     constructor() {
         super('', () => {}); // Dummy values for initialization
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
 
 class FindUserByEmailAction extends Action {
-    static name() { return "findUser"; }
+    static name() { return Actions.FIND_USER_BY_EMAIL_ACTION; }
 
     static async method({email, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         await $.ajax({url: 'https://ilay-apis.online/APIs/API-7/index.php/user/findByEmail?email=' + email,
             type: 'GET', 
             success: function (data) {
-                console.log('data: ' + JSON.stringify(data));
+                console.log('action -> FindUserByEmailAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                 output.addData([data]);
                 results = output;
             },
@@ -266,27 +336,33 @@ class FindUserByEmailAction extends Action {
 
     constructor() {
         super('', () => {}); // Dummy values for initialization
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
 
 
 class AddUserAction extends Action {
-    static name() { return "addUser"; }
+    static name() { return Actions.ADD_USER_ACTION; }
 
     static async method({fullname, phoneNumber, email, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         await $.ajax({
             url: 'https://ilay-apis.online/APIs/API-7/index.php/user/append?' +
                 'fullname=' + fullname + '&phoneNumber=' + phoneNumber + '&email=' + email,
             type: 'GET',
             success: function (data) {
+                console.log('action -> AddUserAction -> success : ' + JSON.stringify(data));
+                console.log('action -> AddUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                 output.addData(data);
                 results = output;
             },
             error: function (data) {
-                //Nothing...
+                console.log('action -> AddUserAction -> error : ' + JSON.stringify(data));
+                console.log('action -> AddUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
+                output.addData([]);
+                results = output;
             }
         });
         return results;
@@ -295,7 +371,7 @@ class AddUserAction extends Action {
     constructor() {
         super('', () => {}); // Dummy values for initialization
         // Override the parent class properties with private values
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
 
     }
@@ -304,14 +380,16 @@ class AddUserAction extends Action {
 
 
 class DeleteUserAction extends Action {
-    static name() { return "deleteUser"; }
+    static name() { return Actions.DELETE_USER_ACTION }
 
     static async method({id, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         await $.ajax({
             url: 'https://ilay-apis.online/APIs/API-7/index.php/user/delete?id=' + id,
             type: 'GET',
             success: function (data) {
+                console.log('action -> DeleteUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                 output.addData(data);
                 results = output;
             }, 
@@ -319,23 +397,23 @@ class DeleteUserAction extends Action {
                 //Nothing...
             } 
         });
-        alert('results: ' + JSON.stringify(results));
         return results;
     }
 
     constructor() {
         super('', () => {}); // Dummy values for initialization
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
 
 
 class UpdateUserAction extends Action {
-    static name() { return "updateUser"; }
+    static name() { return Actions.UPDATE_USER_ACTION; }
 
     static async method({id, fullname, phoneNumber, email, callback, output}) {
-        var results = [];
+        var results = {};
+        console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         id = id;
         var path = 'https://ilay-apis.online/APIs/API-7/index.php';
         var query = '/user/update?id=' + id;
@@ -365,6 +443,7 @@ class UpdateUserAction extends Action {
                     url: url,
                     type: 'GET',
                     success: function (data) {
+                        console.log('action -> UpdateUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
                         output.addData(data);
                         results = output;
                     }
@@ -377,7 +456,7 @@ class UpdateUserAction extends Action {
 
     constructor() {
         super('', () => {}); // Dummy values for initialization
-        this.name = this.constructor.name;
+        this.name = this.constructor.name();
         this.method = this.constructor.method;
     }
 }
@@ -393,19 +472,19 @@ export { ActionFactory, Action, Actions};
         for (const [key, value] of Object.entries(data)) {
             switch (key) {
                 case 'id':
-                    testResults.mergeStatus(TestFactory.GET(Tests.ID_DATA_FIELD_SUB_TEST).run(value));
+                    testResults.mergeStatus(TestFactory.GET(Tests.ID_DATA_FIELD_SUB).run(value));
                     break;
                 case 'fullname':
-                    testResults.mergeStatus(TestFactory.GET(Tests.FULLNAME_DATA_FIELD_SUB_TEST).run(value));
+                    testResults.mergeStatus(TestFactory.GET(Tests.FULLNAME_DATA_FIELD_SUB).run(value));
                     break;
                 case 'email':
-                    testResults.mergeStatus(TestFactory.GET(Tests.EMAIL_DATA_FIELD_SUB_TEST).run(value));
+                    testResults.mergeStatus(TestFactory.GET(Tests.EMAIL_DATA_FIELD_SUB).run(value));
                     break;
                 case 'phoneNumber':
-                    testResults.mergeStatus(TestFactory.GET(Tests.PHONE_NUMBER_DATA_FIELD_SUB_TEST).run(value));
+                    testResults.mergeStatus(TestFactory.GET(Tests.PHONE_NUMBER_DATA_FIELD_SUB).run(value));
                     break;
                 case 'limit':
-                    testResults.mergeStatus(TestFactory.GET(Tests.LIMIT_DATA_FIELD_SUB_TEST).run(value));
+                    testResults.mergeStatus(TestFactory.GET(Tests.LIMIT_DATA_FIELD_SUB).run(value));
                     break;
             }
         }

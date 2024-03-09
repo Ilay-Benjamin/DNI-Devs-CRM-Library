@@ -78,12 +78,12 @@ class Output {
 
 
 class OutputTypes {
-    static ACCESS_ERROR = 'ACCESS_ERROR';
-    static INPUT_ERROR = 'INPUT_ERROR';
-    static UNKNOWN_ERROR = 'UNKNOWN_ERROR';
-    static SYSTEM_ERROR = 'SYSTEM_ERROR';
-    static INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR';
-    static SUCCESS = 'SUCCESS';
+    static ACCESS_ERROR = 'AccessError';
+    static INPUT_ERROR = 'InputError';
+    static UNKNOWN_ERROR = 'UnknownError';
+    static SYSTEM_ERROR = 'SystemError';
+    static INTERNAL_SERVER_ERROR = 'InternalServerError';
+    static SUCCESS = 'Success';
     static IS_OUTPUT_TYPE = (outputType) => {
         const types = Object.getOwnPropertyNames(ErrorTypes).filter(prop => {
             return typeof ErrorTypes[prop] !== 'function' && !['length', 'name', 'prototype'].includes(prop);
@@ -94,16 +94,16 @@ class OutputTypes {
 
 
 class ErrorTypes {
-    static INVALID_INPUT = 'INVALID_INPUT_ERROR';
-    static EMPTY_INPUT = 'EMPTY_INPUT_ERROR';
-    static SHORT_INPUT_LENGTH = 'SHORT_INPUT_LENGTH_ERROR';
-    static LONG_INPUT_LENGTH = 'LONG_INPUT_LENGTH_ERROR';
-    static USER_NOT_FOUND = 'USER_NOT_FOUND_ERROR';
-    static INVALID_ACTION = 'INVALID_ACTION_ERROR';
-    static UNAUTHORIZED = 'UNAUTHORIZED_ERROR';
-    static INCORRECT_ACCESS_CODE = 'INCORRECT_ACCESS_CODE_ERROR';
-    static UNKNOWN_ERROR = 'UNKNOWN_ERROR';
-    static EMAIL_ALREADY_USED = 'EMAIL_ALREADY_USED_ERROR';
+    static INVALID_INPUT = 'InvalidInputError';
+    static EMPTY_INPUT = 'EmptyInputError';
+    static SHORT_INPUT_LENGTH = 'ShortInputLengthError';
+    static LONG_INPUT_LENGTH = 'LongInputLengthError';
+    static USER_NOT_FOUND = 'UserNotFoundError';
+    static INVALID_ACTION = 'InvalidActionError';
+    static UNAUTHORIZED = 'UnauthorizedError';
+    static INCORRECT_ACCESS_CODE = 'IncorrectAccessCodeError';
+    static UNKNOWN_ERROR = 'UnknownError';
+    static EMAIL_ALREADY_USED = 'EmailAlreadyUsedError';
     static IS_ERROR_TYPE = (errorType) => { 
         const errors = Object.getOwnPropertyNames(ErrorTypes).filter(prop => {
             return typeof ErrorTypes[prop] !== 'function' && !['length', 'name', 'prototype'].includes(prop);

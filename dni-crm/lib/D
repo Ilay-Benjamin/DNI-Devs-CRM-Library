@@ -1,0 +1,26 @@
+<br/><b>Warning</b>:  Undefined array key 0 in <b>/home/u398523801/domains/ilay-apis.online/public_html/APIs/API-7/Model/UserModel.php</b> on line <b>24</b><br/>[
+    {
+        "fullname": "\u05d3\u05d5\u05e8\u05d5\u05df \u05e4\u05e8\u05e5",
+        "phoneNumber": "0545887435",
+        "email": "doronPeretz1@gmail.com",
+        "id": 1
+    },
+    {
+        "fullname": "\u05d0\u05d9\u05dc\u05d9\u05d9 \u05d1\u05e0\u05d9\u05de\u05d9\u05df",
+        "phoneNumber": "0547633436",
+        "email": "ilaypro1222@gmail.com",
+        "id": 2
+    },
+    {
+        "fullname": "\u05d3\u05d5\u05e8\u05d5\u05df \u05e4\u05e8\u05e5",
+        "phoneNumber": "0545887435",
+        "email": "peretsdoron@gmail.com",
+        "id": 3
+    },
+    {
+        "fullname": "\u05d0\u05d5\u05e8\u05d9 \u05db\u05d4\u05df",
+        "phoneNumber": "0543012342",
+        "email": "oricohen@gmail.com",
+        "id": 4
+    }
+]

@@ -3,7 +3,7 @@ window.jQuery = jQuery
 window.$ = jQuery
 import { Output, ErrorTypes, OutputFactory } from './lib/output.js';
 import { Action, Actions, ActionFactory } from './lib/action.js';
-import { Test, Tests, TestFactory } from './lib/test.js';
+import { Test, Tests, TestFactory } from './lib/test1.js';
 
 const myHeaders = new Headers();
 myHeaders.append("Access-Control-Allow-Origin", "*");
@@ -17,7 +17,7 @@ export class Dni {
 
     constructor() {}
 
-    async addUser(fullname, phoneNumber, email) {
+    async addUser(fullname, email, phoneNumber) {
         const action = ActionFactory.GET(Actions.ADD_USER_ACTION);
         const callback = () => {};
         const data = {
@@ -44,7 +44,7 @@ export class Dni {
         console.log('dni -> getAllUsersList: ' + JSON.stringify(action));
         const callback = () => {};
         const response =  await action.call();
-        console.log('dni -> response: ' + JSON.stringify(response));
+        console.log('dni : getAllUsersList() -> response: ' + JSON.stringify(response));
         return response;
     }
 

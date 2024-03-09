@@ -1,37 +1,10 @@
-import $ from "../include/jquery.js";
-window.jQuery = jQuery
-window.$ = jQuery
-import { Output, ErrorTypes, OutputFactory } from './output.js';
 
 
-export class Test {
-    constructor(type, name, method) {
-        this.type = type;
-        this.name = name;
-        this.method = method;
-    }
-
-    run(data) {
-        console.log('Test -> run -> this.name : ' + JSON.stringify(this.name));
-
-        console.log('Test -> run -> data : ' + JSON.stringify(data));
-        console.log('Test -> run -> this.method : ' + this.method.toString());
-        var response = new Output();
-        var testResults = this.method({...data});
-        console.log('Test -> run -> testResults : ' + JSON.stringify(testResults));
-        response.merge(testResults);
-        console.log('Test -> run -> response : ' + JSON.stringify(response));
-        response.data = [];
-        return response;
-    }
-}
 
 
-class SubTest {
+class SubTest extends Test {
     constructor(name, type, subType, method) {
-        this.name = name;
-        this.method = method;
-        this.type = type;
+        super(type, name, method);
         this.subType = subType;
     }
 
@@ -42,13 +15,6 @@ class SubTest {
         response.data = [];
         return response;
     }
-}
-
-
-export class TestTypes {
-    static ACTION_TYPE = 'actionTest';
-    static SYSTEM_TYPE = 'systemTest';
-    static INTERNAL_SERVER_TYPE = 'internalServerTest';
 }
 
 
@@ -65,22 +31,9 @@ class SubTests {
     static FULLNAME_DATA_FIELD_TYPE = 'fullnameDataFieldTest';
     static EMAIL_DATA_FIELD_TYPE = 'emailDataFieldTest';
     static PHONE_NUMBER_DATA_FIELD_TYPE = 'phoneNumberDataFieldTest';
-    static EMAIL_USAGE_TEST = 'emailUsageTest';
-    static USER_EXISTIONS_TEST = 'userExistionsTest';
-    static ACTION_NAME_TEST = 'actionNameTest';
-}
-
-
-export class Tests {
-    static ALL_USERS_ACTION_TEST = 'allUsersActionTest';
-    static LIST_USERS_ACTION_TEST = 'listUsersActionTest';
-    static ADD_USER_ACTION_TEST = 'addUserActionTest';
-    static DELETE_USER_ACTION_TEST = 'deleteUserActionTest';
-    static UPDATE_USER_ACTION_TEST = 'updateUserActionTest';
-    static FIND_USER_BY_ID_ACTION_TEST = 'findUserByIdActionTest';
-    static FIND_USER_BY_EMAIL_ACTION_TEST = 'findUserByEmailActionTest';
-    static CALL_ACTION_TEST = 'callActionTest';
-    static TEST_EXISTIONS_TEST = 'testExistionsTest';
+    static EMAIL_USAGE = 'emailUsageTest';
+    static USER_EXISTIONS = 'userExistionsTest';
+    static ACTION_NAME = 'actionNameTest';
 }
 
 
@@ -98,75 +51,6 @@ class SubTestFactory {
             case SubTests.PHONE_NUMBER_DATA_FIELD_TYPE:
                 return new PhoneNumberDataFieldTest();
         }
-    }
-}
-
-
-export class TestFactory {
-    static GET (test) {
-      
-        switch (test) {
-            case Tests.ALL_USERS_ACTION_TEST:
-              return new AllUsersActionTest();
-            case Tests.LIST_USERS_ACTION_TEST:
-              return new ListUsersActionTest();
-            case Tests.ADD_USER_ACTION_TEST:
-              return new AddUserActionTest();
-            case Tests.DELETE_USER_ACTION_TEST:
-              return new DeleteUserActionTest();
-            case Tests.UPDATE_USER_ACTION_TEST:
-              return new UpdateUserActionTest();
-            case Tests.FIND_USER_BY_EMAIL_ACTION_TEST:
-              return new FindUserByIdActionTest();
-            case Tests.FIND_USER_BY_EMAIL_ACTION_TEST:
-              return new FindUserByEmailActionTest();
-            case Tests.CALL_ACTION_TEST:
-              return new CallActionTest();
-        }
-    }
-}
-
-
-class TestExistionsTest extends test {
-    static testName() { return Tests.TEST_EXISTIONS_TEST; }
-    static type() { return TestTypes.SYSTEM_SUB_TYPE; }
-
-    static method({type, isSubTest}) {
-        console.log('test -> AllUsersActionTest -> method : ()');
-        var output = new Output();
-
-        switch (test) {
-            case Tests.ALL_USERS_ACTION_TEST:
-              return new AllUsersActionTest();
-            case Tests.LIST_USERS_ACTION_TEST:
-              return new ListUsersActionTest();
-            case Tests.ADD_USER_ACTION_TEST:
-              return new AddUserActionTest();
-            case Tests.DELETE_USER_ACTION_TEST:
-              return new DeleteUserActionTest();
-            case Tests.UPDATE_USER_ACTION_TEST:
-              return new UpdateUserActionTest();
-            case Tests.FIND_USER_BY_EMAIL_ACTION_TEST:
-              return new FindUserByIdActionTest();
-            case Tests.FIND_USER_BY_EMAIL_ACTION_TEST:
-              return new FindUserByEmailActionTest();
-            case Tests.CALL_ACTION_TEST:
-              return new CallActionTest();
-        }
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            console.log('test -> AllUsersActionTest -> method -> newOutput : ' + JSON.stringify(newOutput));
-            output.merge(newOutput);
-        }
-        console.log('test -> AllUsersActionTest -> method -> return output : ' + JSON.stringify(output));
-        return output;
-    }
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
     }
 }
 
@@ -385,206 +269,6 @@ class PhoneNumberDataFieldTest extends SubTest {
         this.name = this.constructor.subTestName();
         this.type = this.constructor.subTestType();
         this.subType = this.constructor.methodType();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class ListUsersActionTest extends Test {
-    static testName() { return Tests.LIST_USERS_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method({limit}) {
-        console.log('test -> ListUsersActionTest -> method -> limit : ' + limit);
-        var output = new Output();
-        var dataFieldsTestResults = SubTestFactory.GET(SubTests.LIMIT_DATA_FIELD_TYPE).run({limit: limit});
-        console.log('test -> ListUsersActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        output.merge(dataFieldsTestResults);
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.merge(newOutput);
-        }
-        console.log('test -> ' + this.name() + ' -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class AddUserActionTest extends Test {
-    static testName() { return Tests.ADD_USER_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method({fullname, email, phoneNumber}) {
-        console.log('test -> AddUserActionTest -> method -> fullname : ' + fullname);
-        var output = new Output();
-        var dataFieldsTestResults = {
-            fullname: SubTestFactory.GET(SubTests.FULLNAME_DATA_FIELD_TYPE).run({fullname: fullname}),
-            email: SubTestFactory.GET(SubTests.EMAIL_DATA_FIELD_TYPE).run({email: email}),
-            phoneNumber: SubTestFactory.GET(SubTests.PHONE_NUMBER_DATA_FIELD_TYPE).run({phoneNumber: phoneNumber})
-        }
-        console.log('test -> AddUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        dataFieldsTestResults.array.forEach(testResults => {
-            output.merge(testResults);
-        });
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.merge(newOutput);
-        }
-        console.log('test -> ' + this.name() + ' -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class DeleteUserActionTest extends Test {
-    static testName() { return Tests.DELETE_USER_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-    static method({id}) {
-        console.log('test -> DeleteUserActionTest -> method -> id : ' + id);
-        var output = new Output();
-        var test = SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE);
-        console.log('test -> DeleteUserActionTest -> method -> test : ' + JSON.stringify(test));
-        var dataFieldsTestResults = test.run({id: id});
-        console.log('test -> DeleteUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        output.merge(dataFieldsTestResults);
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.merge(newOutput);
-        }
-        console.log('test -> ' + this.name() + ' -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class UpdateUserActionTest extends Test {
-    static testName() { return Tests.UPDATE_USER_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method({id, fullname, email, phoneNumber}) {
-        console.log('test -> UpdateUserActionTest -> method -> id : ' + id);
-        var output = new Output();
-        var emptyInputErrorMessage = OutputFactory.GET_INVALID_INPUT_OUTPUT("מס' מזהה", ErrorTypes.EMPTY_INPUT).messages[0];
-        var dataFieldsTestResults = {
-            id: SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE).run({id: id}),
-            fullname: SubTestFactory.GET(SubTests.FULLNAME_DATA_FIELD_TYPE).run({fullname: fullname}),
-            email: SubTestFactory.GET(SubTests.EMAIL_DATA_FIELD_TYPE).run({email: email}),
-            phoneNumber: SubTestFactory.GET(SubTests.PHONE_NUMBER_DATA_FIELD_TYPE).run({phoneNumber: phoneNumber})
-        }
-        console.log('test -> UpdateUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        dataFieldsTestResults.array.forEach(testResults => {
-            output.merge(testResults);
-        });
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            output.merge(newOutput);
-        }
-        console.log('test -> ' + this.name() + ' -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class FindUserByIdActionTest extends Test {
-    static testName() { return Tests.FIND_USER_BY_ID_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method({id}) {
-        console.log('test -> FindUserActionTest -> method -> id : ' + id);
-        var output = new Output();
-        var dataFieldsTestResults = SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE).run({id: id});
-        console.log('test -> FindUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        output.merge(dataFieldsTestResults);
-        console.log('test -> FindUserActionTest -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-class FindUserByEmailActionTest extends Test {
-    static testName() { return Tests.FIND_USER_BY_EMAIL_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method({email}) {
-        console.log('test -> FindUserActionTest -> method -> email : ' + email);
-        var output = new Output();
-        var dataFieldsTestResults = SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE).run({email: email});
-        console.log('test -> FindUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
-        output.merge(dataFieldsTestResults);
-        console.log('test -> FindUserActionTest -> method -> output : ' + JSON.stringify(output));
-        return output;
-    }
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
-        this.method = this.constructor.method;
-    }
-}
-
-
-
-class AllUsersActionTest extends Test {
-    static testName() { return Tests.ALL_USERS_ACTION_TEST; }
-    static type() { return TestTypes.ACTION_TYPE; }
-
-    static method() {
-        console.log('test -> AllUsersActionTest -> method : ()');
-        var output = new Output();
-        if (!output.hasErrorMessages()) {
-            var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
-            console.log('test -> AllUsersActionTest -> method -> newOutput : ' + JSON.stringify(newOutput));
-            output.merge(newOutput);
-        }
-        console.log('test -> AllUsersActionTest -> method -> return output : ' + JSON.stringify(output));
-        return output;
-    }
-
-    constructor() {
-        super('', '', () => {})
-        this.type = this.constructor.type();
-        this.name = this.constructor.testName();
         this.method = this.constructor.method;
     }
 }

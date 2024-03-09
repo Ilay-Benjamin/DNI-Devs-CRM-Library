@@ -53,7 +53,6 @@ export class TableController {
             const dataRow = document.createElement("tr");
     
             dataRow.addEventListener("click", () => {
-                alert("Row clicked - " + user.id + " : " + JSON.stringify(TableController.USER_INFO_STATE));
                 if (!TableController.USER_INFO_STATE.isLoaded) {
                     TableController.SHOW_USER_INFO(user);
                     TableController.USER_INFO_STATE.id = user.id;
