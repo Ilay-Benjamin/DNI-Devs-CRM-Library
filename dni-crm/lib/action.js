@@ -66,11 +66,10 @@ class Action {
             [Actions.USERS_LIST_ACTION]: function(data) {
                 var testerType = TestTypes.ACTION_TYPE;
                 var actionTestOutput = new Output();
-                var actionTestOutput = new Output();
                 var tester = TesterFactory.GET(testerType);
                 console.log('action -> #getActionTestResults() -> typeof ( tester ) : ' + tester.constructor.name);
                 console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
-                var test = tester.build(Tests.USERS_LIST_ACTION);
+                var test = tester.build(Tests.LIST_USERS_ACTION);
                 console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
                 var testResults = test.run(data);
                 console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
@@ -141,7 +140,6 @@ class Action {
                 console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
                 actionTestOutput.merge(testResults);
                 return actionTestOutput;
-                return actionTestOutput;
             },
             [Actions.UPDATE_USER_ACTION]: function(data) {
                 var testerType = TestTypes.ACTION_TYPE;
@@ -151,7 +149,7 @@ class Action {
                 console.log('action -> #getActionTestResults() -> tester : ' + JSON.stringify(tester));
                 var test = tester.build(Tests.UPDATE_USER_ACTION);
                 console.log('action -> #getActionTestResults() -> test : ' + JSON.stringify(test));
-                var testResults = test.run(data, data, data, data);
+                var testResults = test.run(data);
                 console.log('action -> #getActionTestResults() -> testResults: ' + JSON.stringify(testResults));
                 actionTestOutput.merge(testResults);
                 return actionTestOutput;
@@ -411,7 +409,7 @@ class DeleteUserAction extends Action {
 class UpdateUserAction extends Action {
     static name() { return Actions.UPDATE_USER_ACTION; }
 
-    static async method({id, fullname, phoneNumber, email, callback, output}) {
+    static async method({id, fullname, email, phoneNumber, callback, output}) {
         var results = {};
         console.log('action -> ' + typeof this + ' -> method() -> output : ' + JSON.stringify(output));
         id = id;
@@ -435,22 +433,19 @@ class UpdateUserAction extends Action {
         var url = path + query;
         console.log('url: ' + url);
         await $.ajax({
-            url: 'https://ilay-apis.online/APIs/API-7/index.php/user/find?id=' + id,
-            type: 'GET', 
+            url: url,
+            type: 'GET',
             success: async function (data) {
                 console.log('data: ' + JSON.stringify(data));
-                await $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function (data) {
-                        console.log('action -> UpdateUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
-                        output.addData(data);
-                        results = output;
-                    }
-                });
+                console.log('action -> UpdateUserAction -> output *WITH OUT DATA* : ' + JSON.stringify(output));
+                output.addData(data);
+                results = output;
             }, error: function (data) {
-                //Nothing...
-        }});
+                var errorOutput = OutputFactory.GET_INTERNAL_SERVER_ERROR_OUTPUT(ErrorTypes.USER_NOT_FOUND);
+                output.merge(errorOutput);
+                results = output;
+            }
+        });
         return results;
     }
 

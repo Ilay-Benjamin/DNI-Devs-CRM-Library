@@ -5,6 +5,8 @@ import { Output, ErrorTypes, OutputFactory } from './lib/output.js';
 import { Action, Actions, ActionFactory } from './lib/action.js';
 import { Test, Tests, TestFactory } from './lib/test1.js';
 
+export { Output, ErrorTypes, OutputFactory, Action, Actions, ActionFactory, Test, Tests, TestFactory }
+    
 const myHeaders = new Headers();
 myHeaders.append("Access-Control-Allow-Origin", "*");
 myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -78,7 +80,7 @@ export class Dni {
         return response;
     }
 
-    async updateUserById(id, fullname, phoneNumber, email) {
+    async updateUserById(id, fullname, email, phoneNumber) {
         const action = ActionFactory.GET(Actions.UPDATE_USER_ACTION);
         const callback = () => {};
         const data = {

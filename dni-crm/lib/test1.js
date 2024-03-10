@@ -129,7 +129,7 @@ class ActionTester extends Tester {
                 console.log('test -> AllUsersActionTest -> method -> return output : ' + JSON.stringify(output));
                 return output;
             },
-            [Tests.LIST_USERS_ACTION]: function({id, output}) {
+            [Tests.LIST_USERS_ACTION]: function({limit, output}) {
                 console.log('test -> ListUsersActionTest -> method : ()');
                 var output = new Output();
                 var dataFieldsTestResults = SubTestFactory.GET(SubTests.LIMIT_DATA_FIELD_TYPE).run({limit: limit});
@@ -188,7 +188,13 @@ class ActionTester extends Tester {
                 }
                 console.log('test -> UpdateUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
                 Object.entries(dataFieldsTestResults).forEach(([key, value]) => {
-                    output.merge(value);
+                    if (key == 'id' && value.hasErrorMessages()) {
+                        output.merge(value);
+                    } else if (value.messages.includes(emptyInputErrorMessage) || 
+                        !value.hasErrorMessages()) {
+                        output.merge(value);
+                    } 
+                    
                 });
                 if (!output.hasErrorMessages()) {
                     var newOutput = OutputFactory.GET_SUCCESS_OUTPUT([]);
@@ -198,7 +204,7 @@ class ActionTester extends Tester {
                 return output;
             },
             [Tests.FIND_USER_BY_ID_ACTION]: function({id, output}) {
-                console.log('test -> FindUserActionTest -> method : ()');
+                console.log('test -> FindUserByUdActionTest -> method : ()');
                 var output = new Output();
                 var dataFieldsTestResults = SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE).run({id: id});
                 console.log('test -> FindUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
@@ -207,9 +213,9 @@ class ActionTester extends Tester {
                 return output;
             },
             [Tests.FIND_USER_BY_EMAIL_ACTION]: function({email, output}) {
-                console.log('test -> FindUserActionTest -> method : ()');
+                console.log('test -> FindUserByEmailActionTest -> method : ()');
                 var output = new Output();
-                var dataFieldsTestResults = SubTestFactory.GET(SubTests.ID_DATA_FIELD_TYPE).run({email: email});
+                var dataFieldsTestResults = SubTestFactory.GET(SubTests.EMAIL_DATA_FIELD_TYPE).run({email: email});
                 console.log('test -> FindUserActionTest -> method -> dataFieldsTestResults : ' + JSON.stringify(dataFieldsTestResults));
                 output.merge(dataFieldsTestResults);
                 console.log('test -> FindUserActionTest -> method -> return output : ' + JSON.stringify(output));
